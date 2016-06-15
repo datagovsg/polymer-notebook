@@ -1,5 +1,5 @@
 {
-  "name": "polymercliapp",
+  "name": "polymer-notebook",
   "main": "index.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0"
