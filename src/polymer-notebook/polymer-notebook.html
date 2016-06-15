@@ -1,5 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 
@@ -8,46 +12,64 @@
 <link rel="import" href="../../bower_components/prism-element/prism-highlighter.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
 
-<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="./polymer-notebook-panel.html">
+<link rel="import" href="./json-formatter.html">
 
-<link rel="import" href="./ijavascript-panel.html">
-
-<dom-module id="polymercliapp-app">
+<dom-module id="polymer-notebook">
   <template>
     <style>
       :host {
         display: block;
+        padding: 0px;
+        margin: 0px;
+        box-sizing: border-box;
+      }
+
+      .content{
         @apply(--layout-vertical);
         @apply(--layout-center);
       }
-
-      paper-material{
-        max-width: 900px;
-        min-width: 600px;
-        width: 90vh;
-        margin: 5px;
-      }
-
+      
       paper-fab{
         position: fixed;
         bottom: 10px;
         right: 10px;
       }
+      
+   
+      app-header {
+        background-color: #4285f4;
+        color: #fff;
+      }
 
     </style>
-    <h2>Polymer Notebook</h2>
 
     <prism-highlighter></prism-highlighter>
+    <json-formatter></json-formatter>    
+    
+    <app-header-layout>
+      <app-header effects="waterfall" condenses reveals>
+        <app-toolbar>
+          <div title></div>
+        </app-toolbar>
+        <app-toolbar></app-toolbar>
+        <app-toolbar>
+          <div spacer title>Polymer Notebook</div>
+        </app-toolbar>
+      </app-header>
 
-    <template is="dom-repeat" items="[[panels]]">
-      <paper-material>
-        <ijavascript-panel
-          id="{{item.id}}"
-          codes="{{item.code}}"
-          markdown="{{item.md}}"
-          results="{{item.res}}"></ijavascript-panel>
-      </paper-material>
-    </template>
+    <div class="content">
+      <template is="dom-repeat" items="[[panels]]">
+          <polymer-notebook-panel
+            id="{{item.id}}"
+            codes="{{item.code}}"
+            markdown="{{item.md}}"
+            results="{{item.res}}"
+            entry-animation="slide-from-top-animation"></polymer-notebook-panel>
+
+      </template>
+    </div>
+    </app-header-layout>
 
     <paper-fab icon="add" on-tap="_insertPanel"></paper-fab>
 
@@ -59,7 +81,7 @@
   <script>
     Polymer({
 
-      is: 'polymercliapp-app',
+      is: 'polymer-notebook',
 
       properties: {
 
@@ -106,7 +128,9 @@
         this._worker.onmessage = function(e) {
           var res = e.data;
           //self.panels[res.id].res = res.res.toString();
-          self.set('panels.'+res.id+'.res',res.res.toString());
+          console.log(res);
+          var json = res.res && res.res.toString();
+          self.set('panels.'+res.id+'.res',json);
         }
       },
 

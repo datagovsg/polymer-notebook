@@ -1,0 +1,47 @@
+
+<dom-module id="json-formatter">
+  <template>
+    
+  </template>
+  <script src="../../bower_components/json-formatter-js/dist/bundle.js"></script>
+  <script>
+    (function(){
+      var JSON_FORMAT_EVENT = 'format-json';
+      
+      Polymer({
+        is: 'json-formatter',
+        
+        properties: {
+          formatter:{
+            type: Object,
+            notify: true,
+            readonly: true
+          }
+        },
+       
+        ready: function() {
+          this._handler = this._format.bind(this);
+        },
+        attached: function() {
+          (this.parentElement || this.parentNode.host).addEventListener(JSON_FORMAT_EVENT, this._handler);
+        },
+        detached: function() {
+          (this.parentElement || this.parentNode.host).removeEventListener(JSON_FORMAT_EVENT, this._handler);
+        },
+        _format: function(event){
+          event.stopPropagation();
+          if (!event.detail || !event.detail.json) {
+            Polymer.Base._warn('Malformed', JSON_FORMAT_EVENT, 'event:', event.detail);
+            return;
+          }
+          var detail = event.detail;
+          detail.ele = new JSONFormatter(JSON.parse(detail.json));
+        }
+        
+        
+      
+      });
+    
+    })()
+  </script>
+</dom-module>

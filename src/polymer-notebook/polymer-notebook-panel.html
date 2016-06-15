@@ -7,26 +7,31 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
-
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
 
 <link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
 
-<dom-module id="ijavascript-panel">
+<dom-module id="polymer-notebook-panel">
   <template>
     <style>
       :host {
         display: block;
-        padding: 10px;
+        padding: 5px;
+        margin: 10px;
         min-height: 350px;
+        max-width: 900px;
+        min-width: 600px;
+        width: 90vh;
+        
         overflow-y: auto;
         @apply(--layout-vertical);
         @apply(--self-stretch);
+        @apply(--shadow-elevation-3dp);
 
         --paper-tabs-selection-bar-color: var(--paper-blue-500);
       }
@@ -69,16 +74,18 @@
 
     </style>
 
-    <section on-tap="_showDetails">
-      <iron-collapse opened="[[showDetails]]">
-        <paper-tabs selected="{{selected}}">
-          <paper-tab>Markdown</paper-tab>
-          <paper-tab>Javascript</paper-tab>
-          <paper-tab disabled="[[!_renderReady]]">Render</paper-tab>
-        </paper-tabs>
-      </iron-collapse>
+      <paper-toolbar>
+        <paper-icon-button icon="menu" on-tap="_showDetails"></paper-icon-button>
+        <iron-collapse horizontal opened="[[showDetails]]">
+          <paper-tabs selected="{{selected}}">
+            <paper-tab>Markdown</paper-tab>
+            <paper-tab>Javascript</paper-tab>
+            <paper-tab disabled="[[!_renderReady]]">Render</paper-tab>
+          </paper-tabs>
+        </iron-collapse>
+      </paper-toolbar>
 
-
+    <section style="padding:10px;">
       <neon-animated-pages selected="{{selected}}"
         entry-animation="slide-from-left-animation"
         exit-animation="slide-left-animation">
@@ -95,16 +102,16 @@
           </div>
         </neon-animatable>
         <neon-animatable>
-          <div class="md" on-tap="_editMD">
+          <div class="md">
             <template is="dom-if" if="[[markdown]]">
-              <marked-element class="flex" markdown="[[markdown]]" >
+              <marked-element class="flex" markdown="[[markdown]]" on-tap="_editMD">
                 <div class="markdown-html"></div>
               </marked-element>
             </template>
 
-            <pre id="codes" class="flex" ></pre>
+            <pre id="codes" class="flex" on-tap="_editJS" ></pre>
 
-            <pre id="results" class="flex" ></pre>
+            <pre id="results" class="flex"></pre>
           </div>
 
         </neon-animatable>
@@ -118,9 +125,9 @@
   </template>
   <script>
     (function(HiveOSS){
-      HiveOSS.IJavascriptPanel = Polymer({
+      HiveOSS.NotebookPanel = Polymer({
 
-        is: 'ijavascript-panel',
+        is: 'polymer-notebook-panel',
 
         properties: {
           id: {
@@ -152,13 +159,22 @@
           _renderReady:{
             type: Boolean,
             value: false
+          },
+          _child:{
+            type: Object
           }
         },
 
+        behaviors: [Polymer.NeonAnimationRunnerBehavior, Polymer.NeonAnimatableBehavior],
+        
         listeners:{
           'tap': '_showDetails'
         },
 
+        ready: function(){
+          this.playAnimation('entry');
+        },
+        
         _showDetails: function(){
           var self = this;
           this.showDetails = true;
@@ -171,13 +187,12 @@
           this.selected = 2;
         },
 
-        _toggleEdit: function(){
-          this.edit = !this.edit;
+        _editJS: function(){
+          this.selected = 1;
         },
 
         _editMD: function(){
-          var self = this;
-          this.edit = true;
+          this.selected = 0;
         },
 
         _renderMD: function(){
@@ -186,11 +201,18 @@
         },
 
         _renderCodes: function(results){
+
           this.$.codes.innerHTML = this.fire('syntax-highlight', {code: results, lang: 'javascript'}).detail.code;
         },
 
         _renderResult: function(results){
-          this.$.results.innerHTML = this.fire('syntax-highlight', {code: results, lang: 'javascript'}).detail.code;
+          var ele = this.fire('format-json',{json:results}).detail.ele;
+          if (ele) {
+            var child = ele.render();
+            this._child?this.$.results.replaceChild(child,this._child):this.$.results.appendChild(child,this._child);
+            this._child = child;
+          }
+          //this.$.results.innerHTML = this.fire('syntax-highlight', {code: results, lang: 'javascript'}).detail.code;
         }
 
       });
