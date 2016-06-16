@@ -1,0 +1,60 @@
+<link href="../../bower_components/codemirror/lib/codemirror.css" rel="stylesheet" type="text/css">
+<link href="../../bower_components/codemirror/theme/elegant.css" rel="stylesheet" type="text/css">
+
+<dom-module id="code-mirror">
+  <template>
+    <style>
+      :host{
+        display: block;
+        margin: 5px;
+        min-width: 400px;
+        background-color: #444;
+      }
+
+    </style>
+    <textarea id="editor"></textarea>
+  </template>
+  <script src="../../bower_components/codemirror/lib/codemirror.js"></script>
+  <script src="../../bower_components/codemirror/mode/javascript/javascript.js"></script>
+  <script>
+    (function(){
+      Polymer({
+        is: 'code-mirror',
+
+        properties: {
+          codeMirror:{
+            type: Object,
+            notify: true,
+            readonly: true
+          },
+          value:{
+            type: String,
+            notify: true,
+            readonly: true
+          }
+        },
+
+        attached: function() {
+          var codeMirror = CodeMirror.fromTextArea(this.$.editor,{
+            autofocus: true,
+            showCursorWhenSelecting:true,
+            fixedGutter: true,
+            theme: 'elegant',
+            styleActiveLine: true,
+            matchBrackets: true
+          });
+          var self = this;
+          codeMirror.on('changes',function(){
+            self.value = codeMirror.getValue();
+          });
+
+          this.codeMirror = codeMirror;
+        }
+
+
+
+      });
+
+    })()
+  </script>
+</dom-module>

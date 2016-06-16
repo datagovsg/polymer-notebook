@@ -16,6 +16,9 @@
 
 <link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
 
+<link rel="import" href="./code-mirror.html">
+
+
 <dom-module id="polymer-notebook-panel">
   <template>
     <style>
@@ -27,7 +30,7 @@
         max-width: 900px;
         min-width: 600px;
         width: 90vh;
-        
+
         overflow-y: auto;
         @apply(--layout-vertical);
         @apply(--self-stretch);
@@ -98,7 +101,7 @@
         <neon-animatable>
           <div class="layout-horizontal">
             <paper-icon-button icon="av:play-circle-filled" on-tap="_submitCodes" alt="Run codes"></paper-icon-button>
-            <paper-textarea label="Javascript" value="{{codes}}" class="flex" char-counter></paper-textarea>
+            <code-mirror value="{{codes}}"></code-mirror>
           </div>
         </neon-animatable>
         <neon-animatable>
@@ -166,7 +169,7 @@
         },
 
         behaviors: [Polymer.NeonAnimationRunnerBehavior, Polymer.NeonAnimatableBehavior],
-        
+
         listeners:{
           'tap': '_showDetails'
         },
@@ -174,7 +177,7 @@
         ready: function(){
           this.playAnimation('entry');
         },
-        
+
         _showDetails: function(){
           var self = this;
           this.showDetails = true;

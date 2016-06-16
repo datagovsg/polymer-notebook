@@ -17,7 +17,8 @@
     "paper-icon-button": "polymerelements/paper-icon-button#^1.1.1",
     "d3": "^3.5.17",
     "json-formatter-js": "^1.0.0",
-    "paper-toolbar": "polymerelements/paper-toolbar#^1.1.4"
+    "paper-toolbar": "polymerelements/paper-toolbar#^1.1.4",
+    "codemirror": "^5.15.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
